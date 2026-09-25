@@ -2,6 +2,7 @@ package com.example.photos
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
@@ -48,11 +49,15 @@ fun App(platformModule: Module) {
             var showUploads by remember { mutableStateOf(false) }
             var historyPhoto by remember { mutableStateOf<Photo?>(null) }
             var openedFeedPhotoId by remember { mutableStateOf<String?>(null) }
+            val feedDetailVisibility = remember { MutableTransitionState(false) }
+            feedDetailVisibility.targetState = state.selectedPhoto != null
             val completedUploads = uploadState.items.count { it.status == UploadStatus.Completed }
             LaunchedEffect(completedUploads) {
                 if (completedUploads > 0) viewModel.onAction(FeedAction.Refresh)
             }
-            DetailSystemBars(active = state.selectedPhoto != null || historyPhoto != null)
+            DetailSystemBars(
+                active = feedDetailVisibility.currentState || feedDetailVisibility.targetState || historyPhoto != null,
+            )
             val navigationState = rememberNavigationEventState(NavigationEventInfo.None)
             NavigationEventHandler(
                 state = navigationState,
@@ -82,7 +87,7 @@ fun App(platformModule: Module) {
                             sharedTransitionScope = this@SharedTransitionLayout,
                         )
                         AnimatedVisibility(
-                            visible = state.selectedPhoto != null,
+                            visibleState = feedDetailVisibility,
                             enter = fadeIn(),
                             exit = fadeOut(),
                         ) {

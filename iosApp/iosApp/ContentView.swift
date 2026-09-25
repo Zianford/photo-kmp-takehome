@@ -11,8 +11,17 @@ struct ComposeView: UIViewControllerRepresentable {
 }
 
 struct ContentView: View {
+    @State private var detailActive = false
+
     var body: some View {
         ComposeView()
-                .ignoresSafeArea()
+            .ignoresSafeArea()
+            .preferredColorScheme(detailActive ? .dark : nil)
+            .onReceive(NotificationCenter.default.publisher(for: Notification.Name("PhotoDetailDidOpen"))) { _ in
+                detailActive = true
+            }
+            .onReceive(NotificationCenter.default.publisher(for: Notification.Name("PhotoDetailDidClose"))) { _ in
+                detailActive = false
+            }
     }
 }
