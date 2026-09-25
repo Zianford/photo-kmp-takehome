@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -19,7 +18,6 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -36,6 +34,7 @@ import com.example.photos.domain.model.Photo
 import com.example.photos.ui.designsystem.component.FeedbackPanel
 import com.example.photos.ui.designsystem.component.PhotoTile
 import com.example.photos.ui.designsystem.theme.PhotoSpacing
+import com.example.photos.ui.navigation.FeedNavigationBar
 import com.example.photos.ui.navigation.SharedPhotoKey
 import kotlinx.coroutines.flow.first
 
@@ -60,23 +59,11 @@ fun FeedScreen(
     }
 
     Column(modifier = Modifier.fillMaxSize().safeDrawingPadding()) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(
-                start = PhotoSpacing.medium,
-                end = PhotoSpacing.small,
-                top = PhotoSpacing.small,
-            ),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text("PHOTO JOURNAL", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
-                Text("Explore", style = MaterialTheme.typography.headlineLarge)
-            }
-            TextButton(onClick = { onAction(FeedAction.Refresh) }, enabled = !state.isRefreshing) {
-                Text("Refresh")
-            }
-            TextButton(onClick = onUploadClick) { Text("Upload") }
-        }
+        FeedNavigationBar(
+            onRefresh = { onAction(FeedAction.Refresh) },
+            onUploadClick = onUploadClick,
+            refreshEnabled = !state.isRefreshing,
+        )
 
         when {
             state.isInitialLoading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

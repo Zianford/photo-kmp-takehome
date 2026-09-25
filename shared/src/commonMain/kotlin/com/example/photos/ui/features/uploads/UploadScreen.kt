@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,13 +16,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.example.photos.domain.model.Photo
 import com.example.photos.ui.designsystem.component.PhotoActionButton
 import com.example.photos.ui.designsystem.component.PhotoButtonStyle
 import com.example.photos.ui.designsystem.component.UploadProgressRow
 import com.example.photos.ui.designsystem.theme.PhotoSpacing
+import com.example.photos.ui.navigation.UploadNavigationBar
 
 @Composable
 fun UploadScreen(
@@ -39,10 +38,7 @@ fun UploadScreen(
         modifier = Modifier.fillMaxSize().safeDrawingPadding().padding(PhotoSpacing.medium),
         verticalArrangement = Arrangement.spacedBy(PhotoSpacing.medium),
     ) {
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Text("Uploads", style = MaterialTheme.typography.headlineLarge, modifier = Modifier.weight(1f))
-            TextButton(onClick = onClose) { Text("Close") }
-        }
+        UploadNavigationBar(onClose = onClose)
         Row(horizontalArrangement = Arrangement.spacedBy(PhotoSpacing.small)) {
             PhotoActionButton(
                 label = "Current",
