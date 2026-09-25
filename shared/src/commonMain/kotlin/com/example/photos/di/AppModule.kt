@@ -3,6 +3,8 @@ package com.example.photos.di
 import com.example.photos.api.FakePhotoApi
 import com.example.photos.api.PhotoApi
 import com.example.photos.data.repository.PhotoRepositoryImpl
+import com.example.photos.data.repository.PhotoSnapshotStore
+import com.example.photos.data.repository.RoomPhotoSnapshotStore
 import com.example.photos.data.repository.PhotoUploadRepositoryImpl
 import com.example.photos.data.repository.RoomUploadHistoryRepository
 import com.example.photos.data.repository.Sha256ContentHasher
@@ -23,7 +25,9 @@ import org.koin.dsl.module
 
 val appModule = module {
     single<PhotoApi> { FakePhotoApi() }
-    single<PhotoRepository> { PhotoRepositoryImpl(get()) }
+    single<PhotoRepository> { PhotoRepositoryImpl(get(), get()) }
+    single { get<PhotoDatabase>().cachedPhotoDao() }
+    single<PhotoSnapshotStore> { RoomPhotoSnapshotStore(get()) }
     single<PhotoUploadRepository> { PhotoUploadRepositoryImpl(get()) }
     single { get<PhotoDatabase>().uploadRecordDao() }
     single<UploadHistoryRepository> { RoomUploadHistoryRepository(get()) }
