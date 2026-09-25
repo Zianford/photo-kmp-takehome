@@ -22,6 +22,7 @@ kotlin {
         namespace = "com.example.photos.shared"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
+        withHostTestBuilder { }
 
         compilerOptions {
             jvmTarget = JvmTarget.JVM_11
@@ -40,9 +41,19 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
+            implementation(libs.coil.compose)
+            implementation(libs.coil.network.ktor3)
+            implementation(libs.lifecycle.runtime.compose)
+            implementation(libs.navigation.event.compose)
         }
         androidMain.dependencies {
             implementation(libs.androidx.activity.compose)
+            implementation(libs.ktor.client.okhttp)
+            implementation(libs.androidx.core)
+        }
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

@@ -11,7 +11,8 @@ internal fun ApiPhoto.toDomain(): Photo = Photo(
     height = height,
     createdAt = createdAt,
     thumbnailUrl = thumbnailUrl,
-    imageUrl = imageUrl(width),
+    previewUrl = imageUrl(480),
+    imageUrl = imageUrl(1600),
 )
 
 internal fun ApiPhotoPage.toDomain(): PhotoPage = PhotoPage(

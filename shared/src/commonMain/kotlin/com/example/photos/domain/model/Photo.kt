@@ -8,6 +8,7 @@ data class Photo(
     val height: Int,
     val createdAt: Instant,
     val thumbnailUrl: String,
+    val previewUrl: String,
     val imageUrl: String,
 )
 
