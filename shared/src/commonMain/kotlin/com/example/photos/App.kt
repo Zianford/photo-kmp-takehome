@@ -7,6 +7,10 @@ import androidx.navigationevent.compose.NavigationEventHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,6 +21,9 @@ import com.example.photos.ui.features.detail.DetailSystemBars
 import com.example.photos.ui.features.feed.FeedAction
 import com.example.photos.ui.features.feed.FeedScreen
 import com.example.photos.ui.features.feed.FeedViewModel
+import com.example.photos.ui.features.uploads.UploadScreen
+import com.example.photos.ui.features.uploads.UploadStatus
+import com.example.photos.ui.features.uploads.UploadViewModel
 import org.koin.compose.KoinApplication
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.module.Module
@@ -27,19 +34,37 @@ fun App(platformModule: Module) {
         PhotoTheme {
             val viewModel = koinViewModel<FeedViewModel>()
             val state by viewModel.state.collectAsStateWithLifecycle()
+            val uploadViewModel = koinViewModel<UploadViewModel>()
+            val uploadState by uploadViewModel.state.collectAsStateWithLifecycle()
+            var showUploads by remember { mutableStateOf(false) }
+            val completedUploads = uploadState.items.count { it.status == UploadStatus.Completed }
+            LaunchedEffect(completedUploads) {
+                if (completedUploads > 0) viewModel.onAction(FeedAction.Refresh)
+            }
             DetailSystemBars(active = state.selectedPhoto != null)
             val navigationState = rememberNavigationEventState(NavigationEventInfo.None)
             NavigationEventHandler(
                 state = navigationState,
                 isForwardEnabled = false,
-                isBackEnabled = state.selectedPhoto != null,
-                onBackCompleted = { viewModel.onAction(FeedAction.ClosePhoto) },
+                isBackEnabled = state.selectedPhoto != null || showUploads,
+                onBackCompleted = {
+                    if (showUploads) showUploads = false else viewModel.onAction(FeedAction.ClosePhoto)
+                },
             )
             Surface(modifier = Modifier.fillMaxSize()) {
                 Box {
-                    FeedScreen(state = state, onAction = viewModel::onAction)
+                    FeedScreen(state = state, onAction = viewModel::onAction, onUploadClick = { showUploads = true })
                     state.selectedPhoto?.let { photo ->
                         DetailScreen(photo = photo, onClose = { viewModel.onAction(FeedAction.ClosePhoto) })
+                    }
+                    if (showUploads) {
+                        Surface(modifier = Modifier.fillMaxSize()) {
+                            UploadScreen(
+                                state = uploadState,
+                                onAction = uploadViewModel::onAction,
+                                onClose = { showUploads = false },
+                            )
+                        }
                     }
                 }
             }

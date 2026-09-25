@@ -37,7 +37,7 @@ import com.example.photos.ui.designsystem.theme.PhotoSpacing
 import kotlinx.coroutines.flow.first
 
 @Composable
-fun FeedScreen(state: FeedUiState, onAction: (FeedAction) -> Unit) {
+fun FeedScreen(state: FeedUiState, onAction: (FeedAction) -> Unit, onUploadClick: () -> Unit = {}) {
     val gridState = rememberLazyGridState()
 
     LaunchedEffect(gridState, state.photos.size, state.nextCursor) {
@@ -66,6 +66,7 @@ fun FeedScreen(state: FeedUiState, onAction: (FeedAction) -> Unit) {
             TextButton(onClick = { onAction(FeedAction.Refresh) }, enabled = !state.isRefreshing) {
                 Text("Refresh")
             }
+            TextButton(onClick = onUploadClick) { Text("Upload") }
         }
 
         when {
