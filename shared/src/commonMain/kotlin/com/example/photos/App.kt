@@ -1,29 +1,20 @@
 package com.example.photos
 
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.example.photos.di.appModule
+import com.example.photos.ui.designsystem.showcase.DesignSystemShowcase
+import com.example.photos.ui.designsystem.theme.PhotoTheme
 import org.koin.compose.KoinApplication
 
 @Composable
 fun App() {
     KoinApplication(application = { modules(appModule) }) {
-        MaterialTheme(
-            colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme()
-        ) {
+        PhotoTheme {
             Surface(modifier = Modifier.fillMaxSize()) {
-                Box(contentAlignment = Alignment.Center) {
-                    Text("Start here — see README.md")
-                }
+                DesignSystemShowcase()
             }
         }
     }
