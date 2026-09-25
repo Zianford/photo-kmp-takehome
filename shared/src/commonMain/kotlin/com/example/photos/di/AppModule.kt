@@ -17,6 +17,7 @@ import com.example.photos.domain.usecase.PrepareUploadUseCase
 import com.example.photos.domain.usecase.UploadPhotoUseCase
 import com.example.photos.ui.features.feed.FeedViewModel
 import com.example.photos.ui.features.uploads.UploadViewModel
+import com.example.photos.ui.features.uploads.UploadHistoryViewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -32,4 +33,5 @@ val appModule = module {
     factory { UploadPhotoUseCase(get(), get(), get()) }
     viewModelOf(::FeedViewModel)
     viewModelOf(::UploadViewModel)
+    viewModelOf(::UploadHistoryViewModel)
 }
