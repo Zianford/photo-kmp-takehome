@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import com.example.photos.di.appModule
 import com.example.photos.domain.model.Photo
 import com.example.photos.ui.designsystem.theme.PhotoTheme
-import com.example.photos.ui.features.detail.DetailScreen
+import com.example.photos.ui.features.detail.PhotoDetailPager
 import com.example.photos.ui.features.detail.DetailSystemBars
 import com.example.photos.ui.features.feed.FeedAction
 import com.example.photos.ui.features.feed.FeedScreen
@@ -64,7 +64,12 @@ fun App(platformModule: Module) {
                 Box {
                     FeedScreen(state = state, onAction = viewModel::onAction, onUploadClick = { showUploads = true })
                     state.selectedPhoto?.let { photo ->
-                        DetailScreen(photo = photo, onClose = { viewModel.onAction(FeedAction.ClosePhoto) })
+                        PhotoDetailPager(
+                            photos = state.photos,
+                            initialPhotoId = photo.id,
+                            onClose = { viewModel.onAction(FeedAction.ClosePhoto) },
+                            onNearEnd = { viewModel.onAction(FeedAction.LoadMore) },
+                        )
                     }
                     if (showUploads) {
                         Surface(modifier = Modifier.fillMaxSize()) {
@@ -79,7 +84,11 @@ fun App(platformModule: Module) {
                         }
                     }
                     historyPhoto?.let { photo ->
-                        DetailScreen(photo = photo, onClose = { historyPhoto = null })
+                        PhotoDetailPager(
+                            photos = historyState.uploads.map { it.photo },
+                            initialPhotoId = photo.id,
+                            onClose = { historyPhoto = null },
+                        )
                     }
                 }
             }
