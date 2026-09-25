@@ -6,7 +6,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,7 +28,11 @@ import coil3.compose.AsyncImage
 import com.example.photos.domain.model.Photo
 
 @Composable
-fun DetailScreen(photo: Photo, onZoomChanged: (Boolean) -> Unit = {}) {
+fun DetailScreen(
+    photo: Photo,
+    imageModifier: Modifier = Modifier,
+    onZoomChanged: (Boolean) -> Unit = {},
+) {
     var imageFailed by remember(photo.imageUrl) { mutableStateOf(false) }
     var imageLoaded by remember(photo.imageUrl) { mutableStateOf(false) }
     var scale by remember(photo.id) { mutableStateOf(1f) }
@@ -63,19 +69,26 @@ fun DetailScreen(photo: Photo, onZoomChanged: (Boolean) -> Unit = {}) {
     }
 
     Box(modifier = Modifier.fillMaxSize().background(Color.Black)) {
-        Box(
+        BoxWithConstraints(
             modifier = Modifier.fillMaxSize()
                 .clipToBounds()
                 .onSizeChanged { viewport = it }
                 .transformable(state = transform, canPan = { scale > 1f }),
         ) {
+            val photoAspect = photo.width.coerceAtLeast(1).toFloat() / photo.height.coerceAtLeast(1)
+            val viewportAspect = maxWidth.value / maxHeight.value
+            val imageWidth = if (photoAspect >= viewportAspect) maxWidth else maxHeight * photoAspect
+            val imageHeight = if (photoAspect >= viewportAspect) maxWidth / photoAspect else maxHeight
             Box(
-                modifier = Modifier.fillMaxSize().graphicsLayer {
-                    scaleX = scale
-                    scaleY = scale
-                    translationX = offset.x
-                    translationY = offset.y
-                },
+                modifier = Modifier.align(Alignment.Center)
+                    .then(imageModifier)
+                    .size(imageWidth, imageHeight)
+                    .graphicsLayer {
+                        scaleX = scale
+                        scaleY = scale
+                        translationX = offset.x
+                        translationY = offset.y
+                    },
             ) {
                 AsyncImage(
                     model = photo.thumbnailUrl,

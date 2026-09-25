@@ -1,5 +1,7 @@
 package com.example.photos.ui.features.feed
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,10 +36,17 @@ import com.example.photos.domain.model.Photo
 import com.example.photos.ui.designsystem.component.FeedbackPanel
 import com.example.photos.ui.designsystem.component.PhotoTile
 import com.example.photos.ui.designsystem.theme.PhotoSpacing
+import com.example.photos.ui.navigation.SharedPhotoKey
 import kotlinx.coroutines.flow.first
 
 @Composable
-fun FeedScreen(state: FeedUiState, onAction: (FeedAction) -> Unit, onUploadClick: () -> Unit = {}) {
+fun FeedScreen(
+    state: FeedUiState,
+    onAction: (FeedAction) -> Unit,
+    onUploadClick: () -> Unit = {},
+    selectedPhotoId: String? = null,
+    sharedTransitionScope: SharedTransitionScope? = null,
+) {
     val gridState = rememberLazyGridState()
 
     LaunchedEffect(gridState, state.photos.size, state.nextCursor) {
@@ -91,7 +100,12 @@ fun FeedScreen(state: FeedUiState, onAction: (FeedAction) -> Unit, onUploadClick
                 verticalArrangement = Arrangement.spacedBy(PhotoSpacing.small),
             ) {
                 items(state.photos, key = { it.id }) { photo ->
-                    FeedPhotoTile(photo = photo, onClick = { onAction(FeedAction.OpenPhoto(photo.id)) })
+                    FeedPhotoTile(
+                        photo = photo,
+                        onClick = { onAction(FeedAction.OpenPhoto(photo.id)) },
+                        selected = selectedPhotoId == photo.id,
+                        sharedTransitionScope = sharedTransitionScope,
+                    )
                 }
                 if (state.isRefreshing || state.isLoadingMore) {
                     item(span = { GridItemSpan(maxLineSpan) }) { LoadingContent() }
@@ -119,18 +133,35 @@ private fun LoadingContent() {
 }
 
 @Composable
-private fun FeedPhotoTile(photo: Photo, onClick: () -> Unit) {
+private fun FeedPhotoTile(
+    photo: Photo,
+    onClick: () -> Unit,
+    selected: Boolean,
+    sharedTransitionScope: SharedTransitionScope?,
+) {
     var imageFailed by remember(photo.previewUrl) { mutableStateOf(false) }
 
     PhotoTile(onClick = onClick) {
-        AsyncImage(
-            model = photo.previewUrl,
-            contentDescription = "Open photo ${photo.id}",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize(),
-            onError = { imageFailed = true },
-            onSuccess = { imageFailed = false },
-        )
+        AnimatedVisibility(visible = !selected, modifier = Modifier.fillMaxSize()) {
+            val imageModifier = if (sharedTransitionScope != null) {
+                with(sharedTransitionScope) {
+                    Modifier.sharedBounds(
+                        sharedContentState = rememberSharedContentState(SharedPhotoKey(photo.id)),
+                        animatedVisibilityScope = this@AnimatedVisibility,
+                    )
+                }
+            } else {
+                Modifier
+            }
+            AsyncImage(
+                model = photo.previewUrl,
+                contentDescription = "Open photo ${photo.id}",
+                contentScale = ContentScale.Crop,
+                modifier = imageModifier.fillMaxSize(),
+                onError = { imageFailed = true },
+                onSuccess = { imageFailed = false },
+            )
+        }
         if (imageFailed) {
             Text(
                 "Image unavailable",
