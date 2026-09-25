@@ -1,0 +1,88 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "d4c54dceaec9111dd62a386790e21044",
+    "entities": [
+      {
+        "tableName": "upload_records",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`fingerprint` TEXT NOT NULL, `clientUploadId` TEXT NOT NULL, `photoId` TEXT, `photoWidth` INTEGER, `photoHeight` INTEGER, `photoCreatedAtMillis` INTEGER, `thumbnailUrl` TEXT, `previewUrl` TEXT, `imageUrl` TEXT, `completedAtMillis` INTEGER, PRIMARY KEY(`fingerprint`))",
+        "fields": [
+          {
+            "fieldPath": "fingerprint",
+            "columnName": "fingerprint",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "clientUploadId",
+            "columnName": "clientUploadId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "photoId",
+            "columnName": "photoId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "photoWidth",
+            "columnName": "photoWidth",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "photoHeight",
+            "columnName": "photoHeight",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "photoCreatedAtMillis",
+            "columnName": "photoCreatedAtMillis",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "thumbnailUrl",
+            "columnName": "thumbnailUrl",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "previewUrl",
+            "columnName": "previewUrl",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "imageUrl",
+            "columnName": "imageUrl",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "completedAtMillis",
+            "columnName": "completedAtMillis",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "fingerprint"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_upload_records_clientUploadId",
+            "unique": true,
+            "columnNames": [
+              "clientUploadId"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_upload_records_clientUploadId` ON `${TABLE_NAME}` (`clientUploadId`)"
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd4c54dceaec9111dd62a386790e21044')"
+    ]
+  }
+}

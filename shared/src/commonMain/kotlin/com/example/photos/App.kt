@@ -19,10 +19,11 @@ import com.example.photos.ui.features.feed.FeedScreen
 import com.example.photos.ui.features.feed.FeedViewModel
 import org.koin.compose.KoinApplication
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.module.Module
 
 @Composable
-fun App() {
-    KoinApplication(application = { modules(appModule) }) {
+fun App(platformModule: Module) {
+    KoinApplication(application = { modules(appModule, platformModule) }) {
         PhotoTheme {
             val viewModel = koinViewModel<FeedViewModel>()
             val state by viewModel.state.collectAsStateWithLifecycle()
